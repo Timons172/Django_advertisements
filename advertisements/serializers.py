@@ -36,6 +36,7 @@ class AdvertisementSerializer(serializers.ModelSerializer):
 
         post = Advertisement.objects.filter(creator=self.context["request"].user, status='OPEN')
         post_quantity = post.count()
-        if post_quantity > 10:
-            raise serializers.ValidationError('The limit of allowed ads has been exceeded')
-        return data
+
+        if data.get('status') == 'OPEN' and self.context['request'].method in ['POST', 'PATCH']:
+            if post_quantity > 10:
+                raise serializers.ValidationError('The limit of allowed ads has been exceeded')
